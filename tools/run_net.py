@@ -18,21 +18,22 @@ def main():
     args = parse_args()
     cfg = load_config(args)
 
-    # Perform training.
-    if cfg.TRAIN.ENABLE:
-        launch_job(cfg=cfg, init_method=args.init_method, func=train)
+    print(cfg)
+    # # Perform training.
+    # if cfg.TRAIN.ENABLE:
+    #     launch_job(cfg=cfg, init_method=args.init_method, func=train)
 
-    # Perform multi-clip testing.
-    if cfg.TEST.ENABLE:
-        launch_job(cfg=cfg, init_method=args.init_method, func=test)
+    # # Perform multi-clip testing.
+    # if cfg.TEST.ENABLE:
+    #     launch_job(cfg=cfg, init_method=args.init_method, func=test)
 
-    # Perform model visualization.
-    if cfg.TENSORBOARD.ENABLE and cfg.TENSORBOARD.MODEL_VIS.ENABLE:
-        launch_job(cfg=cfg, init_method=args.init_method, func=visualize)
+    # # Perform model visualization.
+    # if cfg.TENSORBOARD.ENABLE and cfg.TENSORBOARD.MODEL_VIS.ENABLE:
+    #     launch_job(cfg=cfg, init_method=args.init_method, func=visualize)
 
-    # Run demo.
-    if cfg.DEMO.ENABLE:
-        demo(cfg)
+    # # Run demo.
+    # if cfg.DEMO.ENABLE:
+    #     demo(cfg)
 
 
 if __name__ == "__main__":
