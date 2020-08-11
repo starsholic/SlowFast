@@ -9,7 +9,7 @@ TRAIN:
   CHECKPOINT_TYPE: caffe2
 DATA:
   NUM_FRAMES: 64
-  SAMPLING_RATE: 2
+  SAMPLING_RATE: 24
   TRAIN_JITTER_SCALES: [256, 320]
   TRAIN_CROP_SIZE: 224
   TEST_CROP_SIZE: 256
@@ -20,10 +20,12 @@ DETECTION:
 MOVIEGRAPH:
   BGR: False
   DETECTION_SCORE_THRESH: 0.8
-  TEST_PREDICT_BOX_LISTS: ["person_box_67091280_iou90/ava_detection_val_boxes_and_labels.csv"]
+  TEST_PREDICT_BOX_LISTS: ["person_box_ann/val_predicted_box.csv"]
   FRAME_DIR: "/data/wushiwei/data/moviegraph/1fps_version"
   FRAME_LIST_DIR: "/data/wushiwei/data/SRRMM_ann/moviegraph/frame_list"
   TEST_LISTS: ["val.csv"]
+  ANNOTATION_DIR: '/data/wushiwei/data/SRRMM_ann/moviegraph/'
+  FULL_TEST_ON_VAL: True
 SLOWFAST:
   ALPHA: 4
   BETA_INV: 8

@@ -23,9 +23,9 @@ def main():
     # if cfg.TRAIN.ENABLE:
     #     launch_job(cfg=cfg, init_method=args.init_method, func=train)
 
-    # # Perform multi-clip testing.
-    # if cfg.TEST.ENABLE:
-    #     launch_job(cfg=cfg, init_method=args.init_method, func=test)
+    # Perform multi-clip testing.
+    if cfg.TEST.ENABLE:
+        launch_job(cfg=cfg, init_method=args.init_method, func=test)
 
     # # Perform model visualization.
     # if cfg.TENSORBOARD.ENABLE and cfg.TENSORBOARD.MODEL_VIS.ENABLE:
