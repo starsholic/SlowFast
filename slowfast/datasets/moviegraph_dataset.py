@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 @DATASET_REGISTRY.register()
-class MovieGraph(torch.utils.data.Dataset):
-    def __init__(self):
-        pass
-    def _load_data(self,)
-    def __len__(self):
-        pass
-    def __getitem__(self):
-        pass
+class Moviegraph(torch.utils.data.Dataset):
+    # def __init__(self):
+    #     pass
+    # def _load_data(self,)
+    # def __len__(self):
+    #     pass
+    # def __getitem__(self):
+    #     pass
 
     def __init__(self, cfg, split):
         self.cfg = cfg
@@ -66,6 +66,7 @@ class MovieGraph(torch.utils.data.Dataset):
         )
 
         assert len(boxes_and_labels) == len(self._image_paths)
+
 
         boxes_and_labels = [
             boxes_and_labels[self._video_idx_to_name[i]]
@@ -362,7 +363,7 @@ class MovieGraph(torch.utils.data.Dataset):
         #     self._sample_rate,
         #     num_frames=len(self._image_paths[video_idx]),
         # )
-        seq = [i for i in range(len(image_paths[video_idx]))]
+        seq = [i for i in range(len(self._image_paths[video_idx]))]
 
         clip_label_list = self._keyframe_boxes_and_labels[video_idx][sec_idx]
         assert len(clip_label_list) > 0

@@ -6,7 +6,7 @@ import os
 
 THRESHOLD_SCORE = 0.8
 config_file = '/data/wushiwei/projects/mmdetection/configs/faster_rcnn/faster_rcnn_x101_64x4d_fpn_2x_coco.py'
-checkpoint_file = '/data/wushiwei//data/SRRMM_ann/checkpoints/faster_rcnn_x101_64x4d_fpn_2x_coco_20200512_161033-5961fa95.pth'
+checkpoint_file = '/data/wushiwei/data/SRRMM_ann/checkpoints/faster_rcnn_x101_64x4d_fpn_2x_coco_20200512_161033-5961fa95.pth'
 frame_dir = '/data/wushiwei/data/moviegraph/1fps_version'
 
 # build the model from a config file and a checkpoint file

@@ -15,6 +15,77 @@ from slowfast.datasets.multigrid_helper import ShortCycleBatchSampler
 from .build import build_dataset
 
 
+import torch
+import re
+from torch._six import container_abcs, string_classes, int_classes
+
+np_str_obj_array_pattern = re.compile(r'[SaUO]')
+
+def mg_collate(batch):
+    r"""Puts each data field into a tensor with outer dimension batch size"""
+    temporal_shape_batch = [batch[i][0].shape[1] for i in range(len(batch))]
+    #padding temporal axis with 0
+    
+    for elem in batch:
+        template_tensor = torch.zeros(3,400,256,339)
+        t_shape = elem[0].shape[1]
+        template_tensor[:,:t_shape,:,:]
+
+    elem = batch[0]
+    # print('elem:',elem) 
+    # print('len(elem)',len(elem)) #2  3
+    # print('elem[0].shape',elem[0].shape) #torch.Size([3, 9, 256, 339])  torch.Size([9, 256, 339])
+    # print('elem[1].shape',elem[1].shape) #torch.Size([3, 39, 256, 339])  torch.Size([9, 256, 339])
+    # shape = [elem[i].shape for i in range(len(elem))]
+    # print(str(shape))
+    # elem2 = batch[1]
+    # shape2 = [elem2[i].shape for i in range(len(elem2))]
+    # print('shape2:',str(shape2)) #[torch.Size([54, 256, 339]), torch.Size([54, 256, 339]), torch.Size([54, 256, 339])]
+
+    elem_type = type(elem)
+    if isinstance(elem, torch.Tensor):
+        out = None
+        if torch.utils.data.get_worker_info() is not None:
+            # If we're in a background process, concatenate directly into a
+            # shared memory tensor to avoid an extra copy
+            numel = sum([x.numel() for x in batch])
+            storage = elem.storage()._new_shared(numel)
+            out = elem.new(storage)
+        # for elem in batch:
+
+        return torch.stack(batch, 0, out=out)
+    elif elem_type.__module__ == 'numpy' and elem_type.__name__ != 'str_' \
+            and elem_type.__name__ != 'string_':
+        elem = batch[0]
+        if elem_type.__name__ == 'ndarray':
+            # array of string classes and object
+            if np_str_obj_array_pattern.search(elem.dtype.str) is not None:
+                raise TypeError(default_collate_err_msg_format.format(elem.dtype))
+
+            return default_collate([torch.as_tensor(b) for b in batch])
+        elif elem.shape == ():  # scalars
+            return torch.as_tensor(batch)
+    elif isinstance(elem, float):
+        return torch.tensor(batch, dtype=torch.float64)
+    elif isinstance(elem, int_classes):
+        return torch.tensor(batch)
+    elif isinstance(elem, string_classes):
+        return batch
+    elif isinstance(elem, container_abcs.Mapping):
+        return {key: default_collate([d[key] for d in batch]) for key in elem}
+    elif isinstance(elem, tuple) and hasattr(elem, '_fields'):  # namedtuple
+        return elem_type(*(default_collate(samples) for samples in zip(*batch)))
+    elif isinstance(elem, container_abcs.Sequence):
+        transposed = zip(*batch)
+        # print(transposed[0])
+        # temporal_shape_batch = [batch[i][0].shape[1] for i in range(len(batch))]
+        # print('temporal_shape_batch',str(temporal_shape_batch))
+        
+        return [mg_collate(samples) for samples in transposed]
+
+    raise TypeError(default_collate_err_msg_format.format(elem_type))
+
+
 def detection_collate(batch):
     """
     Collate function for detection task. Concatanate bboxes, labels and
@@ -25,8 +96,16 @@ def detection_collate(batch):
     Returns:
         (tuple): collated detection data batch.
     """
+    
     inputs, labels, video_idx, extra_data = zip(*batch)
-    inputs, video_idx = default_collate(inputs), default_collate(video_idx)
+    ##inputs tuple , len(inputs)=8 其中一个sample list是inputs[0]，inputs[0]有两个pathway,
+    #inputs[0][0].shape  torch.Size([3, 9, 256, 339])  ,inputs[0][1].shape  torch.Size([3, 39, 256, 339])
+    # print('inputs in loader.py:',type(inputs))
+    # print('len(inputs)',len(inputs))
+    # print('inputs[0].shape',len(inputs[0]))
+    # print('inputs[0][0].shape',inputs[0][0].shape)
+    # print('inputs[0][1].shape',inputs[0][1].shape)
+    inputs, video_idx = mg_collate(inputs), default_collate(video_idx)
     labels = torch.tensor(np.concatenate(labels, axis=0)).float()
 
     collated_extra_data = {}
